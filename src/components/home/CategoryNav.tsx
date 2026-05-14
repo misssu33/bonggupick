@@ -15,12 +15,6 @@ function SectionHead({ title }: { title: string }) {
 
 const ORDER: Category[] = ["daily", "it", "support"];
 
-const BLURB: Record<Category, string> = {
-  daily: "살림·습관·생산성, 오늘 바로 쓰는 팁",
-  it: "도구, 바이브코딩, 디지털 트렌드",
-  support: "신생아·유아부터 노인까지, 복지·지원 한눈에",
-};
-
 /**
  * 카테고리 바로가기 — 3열 카드(모바일 1열)
  */
@@ -45,7 +39,7 @@ export function CategoryNav() {
                     {meta.ko}
                   </span>
                   <span className="text-sm leading-relaxed text-mute">
-                    {BLURB[slug]}
+                    {meta.description}
                   </span>
                 </Link>
               </li>

@@ -6,20 +6,14 @@ import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import {
   CATEGORY_LABELS,
+  getCategoryDescription,
   getCategoryKo,
-  getCategoryLabel,
   isCategorySlug,
 } from "@/lib/categories";
 import { getPostsByCategory } from "@/lib/posts";
 import type { Category } from "@/types/post";
 
 const ALL: Category[] = ["daily", "it", "support"];
-
-const SUBTITLE: Record<Category, string> = {
-  daily: "더 나은 하루를 만드는 작은 팁들",
-  it: "AI와 디지털 트렌드, 도구 활용법",
-  support: "놓치면 아까운 정부 지원금과 정책",
-};
 
 type PageProps = {
   params: { slug: string };
@@ -38,7 +32,7 @@ export async function generateMetadata({
   const ko = getCategoryKo(params.slug);
   return {
     title: `${ko} | 봉구픽`,
-    description: `${ko} 관련 트렌드 모음`,
+    description: getCategoryDescription(params.slug),
   };
 }
 
@@ -62,16 +56,13 @@ export default async function CategoryPage({ params }: PageProps) {
           </Link>
 
           <p className="mt-8 text-xs tracking-wider text-mute sm:text-sm">
-            ─── CATEGORY
+            ─── {category.toUpperCase()}
           </p>
           <h1 className="font-serif mt-4 text-4xl font-bold leading-tight tracking-tight text-charcoal sm:text-5xl">
-            {getCategoryLabel(category)}
+            {getCategoryKo(category)}
           </h1>
-          <p className="mt-4 max-w-2xl text-lg leading-relaxed text-mute">
-            {SUBTITLE[category]}
-          </p>
-          <p className="mt-3 text-sm text-mute">
-            총 {posts.length}개의 글
+          <p className="mt-4 max-w-2xl text-lg italic leading-relaxed text-mute">
+            {getCategoryDescription(category)}
           </p>
           <div
             className="mt-8 h-px max-w-2xl bg-caramel/80"
@@ -81,7 +72,7 @@ export default async function CategoryPage({ params }: PageProps) {
           <section className="mt-12" aria-label={`${getCategoryKo(category)} 글 목록`}>
             {posts.length === 0 ? (
               <div className="rounded-lg border border-dashed border-line-soft bg-paper/50 py-16 text-center">
-                <p className="text-mute">아직 글이 없습니다.</p>
+                <p className="text-mute">아직 발행된 글이 없어요</p>
                 <Link
                   href="/"
                   className="mt-6 inline-block text-sm font-medium text-caramel underline-offset-4 transition-base hover:underline"
@@ -124,7 +115,7 @@ export default async function CategoryPage({ params }: PageProps) {
                           {o.ko}
                         </p>
                         <p className="mt-0.5 line-clamp-2 text-xs text-mute">
-                          {SUBTITLE[c]}
+                          {getCategoryDescription(c)}
                         </p>
                       </div>
                       <span className="text-caramel" aria-hidden>
