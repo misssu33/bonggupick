@@ -1,5 +1,10 @@
 import type { Category } from "@/types/post";
 
+/** 동적 라우트 등에서 slug가 카테고리인지 검사 */
+export function isCategorySlug(slug: string): slug is Category {
+  return slug === "daily" || slug === "it" || slug === "support";
+}
+
 /** 카테고리 라벨·이모지(slug는 DB category 값과 동일) */
 export const CATEGORY_LABELS: Record<
   Category,

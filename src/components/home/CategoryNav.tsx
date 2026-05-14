@@ -35,7 +35,7 @@ export function CategoryNav() {
             return (
               <li key={slug}>
                 <Link
-                  href="#"
+                  href={`/category/${slug}`}
                   className="flex h-full flex-col gap-3 rounded-lg border border-line-soft bg-cream p-6 transition-base hover:border-caramel hover:bg-paper sm:p-8"
                 >
                   <span className="text-4xl" aria-hidden>

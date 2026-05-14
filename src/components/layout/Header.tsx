@@ -1,15 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import type { Category } from "@/types/post";
 import { CATEGORY_LABELS } from "@/lib/categories";
 
 const navLinks: { category: Category; href: string; label: string }[] = [
-  { category: "daily", href: "#", label: "일상" },
-  { category: "it", href: "#", label: "IT" },
-  { category: "support", href: "#", label: "지원사업" },
+  { category: "daily", href: "/category/daily", label: "일상" },
+  { category: "it", href: "/category/it", label: "IT" },
+  { category: "support", href: "/category/support", label: "지원사업" },
 ];
 
 /**
@@ -53,6 +54,7 @@ function ThemeToggle() {
  */
 export function Header() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <header className="border-b border-line-soft transition-colors">
@@ -75,15 +77,22 @@ export function Header() {
               className="hidden items-center gap-6 md:flex"
               aria-label="주 메뉴"
             >
-              {navLinks.map((item) => (
-                <Link
-                  key={item.category}
-                  href={item.href}
-                  className="text-sm text-charcoal transition-base hover:text-caramel"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {navLinks.map((item) => {
+                const active = pathname === item.href;
+                return (
+                  <Link
+                    key={item.category}
+                    href={item.href}
+                    className={`text-sm transition-base hover:text-caramel ${
+                      active
+                        ? "font-medium text-caramel"
+                        : "text-charcoal"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </nav>
             <ThemeToggle />
             <button
@@ -132,16 +141,21 @@ export function Header() {
           }`}
           aria-label="모바일 메뉴"
         >
-          {navLinks.map((item) => (
-            <Link
-              key={item.category}
-              href={item.href}
-              className="text-sm text-charcoal transition-base hover:text-caramel"
-              onClick={() => setOpen(false)}
-            >
-              {CATEGORY_LABELS[item.category].emoji} {item.label}
-            </Link>
-          ))}
+          {navLinks.map((item) => {
+            const active = pathname === item.href;
+            return (
+              <Link
+                key={item.category}
+                href={item.href}
+                className={`text-sm transition-base hover:text-caramel ${
+                  active ? "font-medium text-caramel" : "text-charcoal"
+                }`}
+                onClick={() => setOpen(false)}
+              >
+                {CATEGORY_LABELS[item.category].emoji} {item.label}
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </header>

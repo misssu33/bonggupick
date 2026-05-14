@@ -11,8 +11,28 @@ const notoSerifKr = Noto_Serif_KR({
 });
 
 export const metadata: Metadata = {
-  title: "봉구픽 | 이번 주 트렌드 Pick",
-  description: "매주 월·목, 새로운 트렌드 Pick이 도착합니다.",
+  metadataBase: new URL("https://bonggupick.com"),
+  title: {
+    default: "봉구픽 | 이번 주 트렌드 Pick",
+    template: "%s | 봉구픽",
+  },
+  description: "매주 월·목, 20~30대를 위한 트렌드 큐레이션 매거진",
+  keywords: ["트렌드", "청년", "IT", "국가지원사업", "재테크", "봉구픽"],
+  authors: [{ name: "봉구픽" }],
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    siteName: "봉구픽",
+    url: "https://bonggupick.com",
+    title: "봉구픽 | 이번 주 트렌드 Pick",
+    description: "매주 월·목, 20~30대를 위한 트렌드 큐레이션 매거진",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+  verification: { google: "" },
 };
 
 export default function RootLayout({
