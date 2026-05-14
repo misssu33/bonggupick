@@ -1,31 +1,82 @@
 import { cache } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
-import { CATEGORY_LABELS } from "@/lib/categories";
+import { HeroCover } from "@/components/post/HeroCover";
+import { PickConclusion } from "@/components/post/PickConclusion";
+import { StatCard } from "@/components/post/StatCard";
 import { formatPublishedDate, getPostBySlug } from "@/lib/posts";
-import type { Post } from "@/types/post";
 
 const getPost = cache(async (slug: string) => getPostBySlug(slug));
 
-const THUMB_GRADIENT: Record<
-  Post["category"],
-  string
-> = {
-  daily:
-    "bg-gradient-to-br from-caramel/25 via-accent-light/20 to-paper dark:from-caramel/30 dark:via-charcoal/40 dark:to-paper",
-  it: "bg-gradient-to-br from-accent-light/30 via-caramel/20 to-paper dark:from-accent-light/25 dark:to-charcoal/50",
-  support:
-    "bg-gradient-to-br from-caramel/30 via-line-soft/80 to-paper dark:from-caramel/35 dark:to-charcoal/40",
-};
+/** 청년도약계좌 글 — StatCard·PickConclusion을 본문 흐름에 끼워 넣기 */
+const YOUTH_LEAP_SLUG = "youth-leap-account-truth";
+
+/** 프로젝트 토큰에 맞춤 (cream-100 등 기본 팔레트 없음 → paper·line-soft) */
+const PROSE_MARKDOWN =
+  "prose prose-lg prose-neutral max-w-none dark:prose-invert " +
+  "prose-headings:font-noto-serif prose-headings:font-bold " +
+  "prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-l-4 prose-h2:border-accent-caramel prose-h2:pl-4 " +
+  "prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3 " +
+  "prose-p:leading-loose prose-p:text-base prose-p:my-4 " +
+  "prose-strong:text-accent-caramel prose-strong:font-bold " +
+  "prose-ul:my-4 prose-li:my-1 " +
+  "prose-table:text-sm prose-table:my-8 " +
+  "prose-th:bg-paper dark:prose-th:bg-charcoal/25 prose-th:p-2 " +
+  "prose-td:p-2 prose-td:border-t prose-td:border-line-soft " +
+  "prose-hr:my-12 prose-hr:border-line-soft " +
+  "prose-a:text-accent-caramel prose-a:no-underline hover:prose-a:underline";
 
 type PageProps = {
   params: { slug: string };
 };
+
+/** HeroCover 우측 상단 ISSUE 라벨 (발행일 기준) */
+function formatMagazineIssueLabel(iso: string | null): string {
+  if (!iso) return "ISSUE 01 · 2026 WINTER";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "ISSUE 01 · 2026 WINTER";
+  const m = d.getMonth() + 1;
+  const y = d.getFullYear();
+  const season =
+    m <= 2 || m === 12
+      ? "WINTER"
+      : m <= 5
+        ? "SPRING"
+        : m <= 8
+          ? "SUMMER"
+          : "AUTUMN";
+  return `ISSUE ${String(m).padStart(2, "0")} · ${y} ${season}`;
+}
+
+function splitBodyBlocks(content: string): string[] {
+  const t = content.trim();
+  if (!t) return [];
+  return t.split(/\n\s*\n+/).filter(Boolean);
+}
+
+/** [STATCARD:…]·[PICK:…] 마커는 페이지에서 컴포넌트로 처리하므로 문자열에서 제거 */
+function stripStatPickMarkers(raw: string): string {
+  return raw
+    .replace(/^\s*\[STATCARD:[^\]]+\]\s*$/gim, "")
+    .replace(/\s*\[PICK:[\s\S]*?\]\s*/gi, "");
+}
+
+/** 마크다운 본문 (GFM 테이블·취소선 등) */
+function MarkdownArticle({ content }: { content: string }) {
+  const md = stripStatPickMarkers(content).trim();
+  if (!md) return null;
+  return (
+    <div className={PROSE_MARKDOWN}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{md}</ReactMarkdown>
+    </div>
+  );
+}
 
 export async function generateMetadata({
   params,
@@ -47,24 +98,6 @@ export async function generateMetadata({
   };
 }
 
-/** 본문을 빈 줄 기준 단락으로 나누어 텍스트 렌더링 */
-function ArticleBody({ content }: { content: string }) {
-  const blocks = content.trim().split(/\n\s*\n+/).filter(Boolean);
-  const paragraphs = blocks.length > 0 ? blocks : content.trim() ? [content] : [];
-
-  return (
-    <div
-      className="prose prose-lg max-w-[700px] dark:prose-invert prose-headings:font-serif prose-headings:font-bold prose-headings:text-charcoal prose-p:text-lg prose-p:leading-[1.8] prose-p:text-charcoal prose-li:text-lg prose-li:leading-[1.8]"
-    >
-      {paragraphs.map((block, i) => (
-        <p key={i} className="mb-8 last:mb-0 whitespace-pre-wrap">
-          {block}
-        </p>
-      ))}
-    </div>
-  );
-}
-
 export default async function PostPage({ params }: PageProps) {
   const post = await getPost(params.slug);
   if (!post) notFound();
@@ -72,19 +105,24 @@ export default async function PostPage({ params }: PageProps) {
   const publishedStr = formatPublishedDate(post.published_at);
   const createdStr = formatPublishedDate(post.created_at);
   const updatedStr = formatPublishedDate(post.updated_at);
-  const emoji = CATEGORY_LABELS[post.category].emoji;
 
   const metaParts: string[] = [];
   if (post.reading_time > 0) metaParts.push(`${post.reading_time}분 읽기`);
   if (publishedStr) metaParts.push(publishedStr);
   metaParts.push(`조회 ${post.view_count}`);
 
+  const cleaned = stripStatPickMarkers(post.content);
+  const blocks = splitBodyBlocks(cleaned);
+  const isYouthLeap = params.slug === YOUTH_LEAP_SLUG;
+  const hasSplit = isYouthLeap && blocks.length > 2;
+  const headText = hasSplit ? blocks.slice(0, 2).join("\n\n") : cleaned;
+  const tailText = hasSplit ? blocks.slice(2).join("\n\n") : "";
+
   return (
     <div className="flex min-h-screen flex-col bg-cream">
       <Header />
       <main className="flex-1 px-4 py-8 sm:px-8 sm:py-12">
         <div className="mx-auto w-full max-w-[700px]">
-          {/* 상단: 좁은 헤더 블록 */}
           <div className="max-w-2xl">
             <Link
               href="/"
@@ -111,41 +149,42 @@ export default async function PostPage({ params }: PageProps) {
               {metaParts.join(" · ")}
             </p>
 
-            <div
-              className="mt-8 h-px w-full bg-caramel/80"
-              aria-hidden
+            <div className="mt-8 h-px w-full bg-caramel/80" aria-hidden />
+          </div>
+
+          <div className="mt-10">
+            <HeroCover
+              category={post.category}
+              title={post.title}
+              issueLabel={formatMagazineIssueLabel(post.published_at)}
             />
           </div>
 
-          {/* 썸네일 */}
-          <div className="mt-10">
-            {post.thumbnail_url ? (
-              <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-                <Image
-                  src={post.thumbnail_url}
-                  alt={post.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 700px"
-                  priority
+          <div className="mx-auto mt-12 max-w-[700px]">
+            {isYouthLeap ? (
+              <>
+                <MarkdownArticle content={headText} />
+                <StatCard
+                  number="14.9%"
+                  label="청년도약계좌 중도해지율 (2024년)"
+                  source="매일경제"
                 />
-              </div>
+                {tailText ? <MarkdownArticle content={tailText} /> : null}
+                <PickConclusion>
+                  <p>
+                    도약계좌는 &apos;무조건 들어야 하는 상품&apos;이 아니라, 내
+                    소비·저축 패턴과 맞을 때 이득이 나는 구조예요. 해지율이
+                    높다는 건 아이러니하게도, &apos;필요한 사람에게 제대로
+                    안내가 됐다&apos;는 신호이기도 합니다. 가입 전 본인
+                    자금·목표를 한 번 더 점검해 보세요.
+                  </p>
+                </PickConclusion>
+              </>
             ) : (
-              <div
-                className={`flex h-[300px] w-full items-center justify-center rounded-lg text-7xl ${THUMB_GRADIENT[post.category]}`}
-                aria-hidden
-              >
-                {emoji}
-              </div>
+              <MarkdownArticle content={post.content} />
             )}
           </div>
 
-          {/* 본문 */}
-          <div className="mx-auto mt-12 max-w-[700px]">
-            <ArticleBody content={post.content} />
-          </div>
-
-          {/* 태그 */}
           {post.tags && post.tags.length > 0 ? (
             <div className="mx-auto mt-12 flex max-w-[700px] flex-wrap gap-2">
               {post.tags.map((tag) => (
@@ -159,7 +198,6 @@ export default async function PostPage({ params }: PageProps) {
             </div>
           ) : null}
 
-          {/* 하단 */}
           <div className="mx-auto mt-16 max-w-[700px] border-t border-line-soft pt-8">
             <p className="text-xs text-mute sm:text-sm">
               작성 {createdStr || "—"}
