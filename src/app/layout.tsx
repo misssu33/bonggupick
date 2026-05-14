@@ -53,7 +53,7 @@ export default function RootLayout({
       <body className="min-h-screen font-sans antialiased" suppressHydrationWarning>
         <ThemeProvider>{children}</ThemeProvider>
         {process.env.NODE_ENV === "production" && (
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
+          <GoogleAnalytics gaId="G-W222W5DLC3" />
         )}
       </body>
     </html>
