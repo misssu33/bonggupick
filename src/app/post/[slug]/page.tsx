@@ -12,6 +12,8 @@ import { PickConclusion } from "@/components/post/PickConclusion";
 import { StatCard } from "@/components/post/StatCard";
 import { formatPublishedDate, getPostBySlug } from "@/lib/posts";
 
+export const revalidate = 60;
+
 const getPost = cache(async (slug: string) => getPostBySlug(slug));
 
 /** 청년도약계좌 글 — StatCard·PickConclusion을 본문 흐름에 끼워 넣기 */

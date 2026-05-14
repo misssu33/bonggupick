@@ -13,6 +13,8 @@ import {
 import { getPostsByCategory } from "@/lib/posts";
 import type { Category } from "@/types/post";
 
+export const revalidate = 60;
+
 const ALL: Category[] = ["daily", "it", "support"];
 
 type PageProps = {

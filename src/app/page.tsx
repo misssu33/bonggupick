@@ -6,6 +6,8 @@ import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { getFeaturedPost, getLatestPosts } from "@/lib/posts";
 
+export const revalidate = 60;
+
 export default async function Home() {
   const featuredPost = await getFeaturedPost();
   const latestPosts = await getLatestPosts(6);

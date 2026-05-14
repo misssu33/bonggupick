@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/posts";
 
+export const revalidate = 3600;
+
 const BASE = "https://bonggupick.com";
 
 /** SEO용 정적 라우트 (Supabase 실패 시에도 동일하게 사용) */
