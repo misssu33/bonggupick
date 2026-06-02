@@ -1,41 +1,48 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Post } from "@/types/post";
-import { CATEGORY_LABELS } from "@/lib/categories";
+import type { Post } from "@/types/database";
 import { formatPublishedDate } from "@/lib/posts";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";
 
 type PostCardProps = {
   post: Post;
+  featured?: boolean;
 };
 
-const THUMB_GRADIENT: Record<
-  Post["category"],
-  string
-> = {
-  daily:
-    "bg-gradient-to-br from-caramel/25 via-accent-light/20 to-paper dark:from-caramel/30 dark:via-charcoal/40 dark:to-paper",
-  it: "bg-gradient-to-br from-accent-light/30 via-caramel/20 to-paper dark:from-accent-light/25 dark:to-charcoal/50",
-  support:
-    "bg-gradient-to-br from-caramel/30 via-line-soft/80 to-paper dark:from-caramel/35 dark:to-charcoal/40",
+const THUMB_GRADIENT: Record<string, string> = {
+  tiktok: "bg-gradient-to-br from-blue-100 via-slate-50 to-white",
+  shorts: "bg-gradient-to-br from-indigo-100 via-slate-50 to-white",
+  "ai-detail": "bg-gradient-to-br from-sky-100 via-slate-50 to-white",
+  life: "bg-gradient-to-br from-emerald-50 via-slate-50 to-white",
+  "ai-tools": "bg-gradient-to-br from-violet-100 via-slate-50 to-white",
+  experiment: "bg-gradient-to-br from-slate-200 via-slate-50 to-white",
 };
+
+const DEFAULT_GRADIENT =
+  "bg-gradient-to-br from-slate-100 via-slate-50 to-white";
 
 /**
- * 최신글·목록용 카드 — 썸네일 또는 카테고리 그라데이션 + 뱃지 + 제목 + 발췌 + 메타
+ * 게시글 카드
  */
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post, featured = false }: PostCardProps) {
   const href = `/post/${post.slug}`;
   const dateStr = formatPublishedDate(post.published_at);
-  const emoji = CATEGORY_LABELS[post.category].emoji;
+  const slug = post.category.slug;
+  const gradient = THUMB_GRADIENT[slug] ?? DEFAULT_GRADIENT;
+  const emoji = post.category.emoji;
 
   return (
     <article className="group h-full">
       <Link
         href={href}
-        className="flex h-full flex-col overflow-hidden rounded-md border border-line-soft bg-paper/80 shadow-soft transition-base hover:-translate-y-1 hover:border-caramel/30 hover:shadow-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+        className={`flex h-full flex-col overflow-hidden rounded-xl border bg-cream shadow-soft transition-base hover:-translate-y-0.5 hover:shadow-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2 ${
+          featured
+            ? "border-caramel/40 ring-1 ring-caramel/20"
+            : "border-line-soft hover:border-caramel/25"
+        }`}
       >
         <div
-          className={`relative aspect-[16/10] w-full overflow-hidden bg-paper ${!post.thumbnail_url ? THUMB_GRADIENT[post.category] : ""}`}
+          className={`relative aspect-[16/10] w-full overflow-hidden bg-paper ${!post.thumbnail_url ? gradient : ""}`}
         >
           {post.thumbnail_url ? (
             <Image
@@ -53,9 +60,14 @@ export function PostCard({ post }: PostCardProps) {
               {emoji}
             </span>
           )}
+          {featured || post.is_featured ? (
+            <span className="absolute left-3 top-3 rounded-full bg-caramel px-2.5 py-0.5 text-[10px] font-semibold text-white">
+              FEATURED
+            </span>
+          ) : null}
         </div>
         <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
-          <CategoryBadge category={post.category} variant="ko" />
+          <CategoryBadge category={post.category} variant="name" />
           <h3 className="text-balance text-base font-semibold leading-snug text-charcoal transition-base group-hover:text-caramel sm:text-lg">
             {post.title}
           </h3>
@@ -65,7 +77,9 @@ export function PostCard({ post }: PostCardProps) {
             </p>
           ) : null}
           <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-mute">
-            {dateStr ? <time dateTime={post.published_at ?? undefined}>{dateStr}</time> : null}
+            {dateStr ? (
+              <time dateTime={post.published_at ?? undefined}>{dateStr}</time>
+            ) : null}
             {dateStr && post.reading_time > 0 ? (
               <span className="text-line-soft" aria-hidden>
                 ·

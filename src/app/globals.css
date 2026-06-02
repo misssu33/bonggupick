@@ -2,24 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 디자인 토큰 — 시맨틱(라이트 기본값) */
+/* 디자인 토큰 — 화이트·블루 포인트, 자료형 아카이브 */
 :root {
-  /* 컬러 */
-  --bg-cream: #faf7f2;
-  --bg-paper: #f5f0e8;
-  --text-charcoal: #2c2a26;
-  --text-mute: #6b6660;
-  --accent-caramel: #b8845f;
-  --accent-light: #d4a574;
-  --line-soft: #e8e2d8;
+  --bg-cream: #ffffff;
+  --bg-paper: #f8fafc;
+  --text-charcoal: #0f172a;
+  --text-mute: #64748b;
+  --accent-primary: #2563eb;
+  --accent-primary-hover: #1d4ed8;
+  --accent-light: #dbeafe;
+  --accent-caramel: var(--accent-primary);
+  --line-soft: #e2e8f0;
 
-  /* 다크 모드용 원시 토큰 */
-  --bg-cream-dark: #1c1a17;
-  --bg-paper-dark: #2a2622;
-  --text-charcoal-dark: #f0ebe3;
-  --text-mute-dark: #948d85;
+  --bg-cream-dark: #0f172a;
+  --bg-paper-dark: #1e293b;
+  --text-charcoal-dark: #f1f5f9;
+  --text-mute-dark: #94a3b8;
 
-  /* 타이포 스케일 (모바일 우선, sm 이상에서 확대) */
   --text-xs: 12px;
   --text-sm: 14px;
   --text-base: 16px;
@@ -30,7 +29,6 @@
   --text-4xl: 32px;
   --text-5xl: 40px;
 
-  /* 간격 (8px 베이스) */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -41,37 +39,33 @@
   --space-16: 64px;
   --space-24: 96px;
 
-  /* 라운드 / 보더 */
   --radius-sm: 6px;
   --radius-md: 12px;
-  --radius-lg: 20px;
+  --radius-lg: 16px;
   --border-soft: 1px solid var(--line-soft);
 
-  /* 그림자 */
-  --shadow-soft: 0 2px 8px rgba(44, 42, 38, 0.04);
-  --shadow-hover: 0 8px 24px rgba(44, 42, 38, 0.08);
+  --shadow-soft: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-hover: 0 8px 24px rgba(37, 99, 235, 0.08);
 
-  /* 트랜지션 */
-  --transition-base: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @media (min-width: 640px) {
   :root {
-    --text-4xl: 48px;
-    --text-5xl: 64px;
+    --text-4xl: 44px;
+    --text-5xl: 56px;
   }
 }
 
-/* 다크 모드: html.dark (next-themes) — 시맨틱 토큰 교체 */
 .dark {
   --bg-cream: var(--bg-cream-dark);
   --bg-paper: var(--bg-paper-dark);
   --text-charcoal: var(--text-charcoal-dark);
   --text-mute: var(--text-mute-dark);
-  /* 다크에서 포인트 살짝 밝게 */
-  --accent-caramel: #d4a574;
-  --accent-light: #e4bc8f;
-  --line-soft: #3d3834;
+  --accent-primary: #60a5fa;
+  --accent-caramel: var(--accent-primary);
+  --accent-light: #1e3a5f;
+  --line-soft: #334155;
   --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.25);
   --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.35);
 }
@@ -85,8 +79,7 @@
 
   html {
     -webkit-text-size-adjust: 100%;
-    transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-      background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: color 0.2s ease, background-color 0.2s ease;
   }
 
   body {
@@ -99,8 +92,6 @@
     font-size: var(--text-base);
     line-height: 1.7;
     word-break: keep-all;
-    transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-      background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -127,7 +118,6 @@
     text-wrap: balance;
   }
 
-  /* 미묘한 인터랙션용 공통 트랜지션 */
   .transition-base {
     transition: var(--transition-base);
   }

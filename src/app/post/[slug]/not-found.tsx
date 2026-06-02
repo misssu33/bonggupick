@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
+import { SiteFooter } from "@/components/layout/SiteFooter";
+import { SiteHeader } from "@/components/layout/SiteHeader";
 
 /**
  * 글 상세에서 notFound() 시 표시되는 404
@@ -8,7 +8,7 @@ import { Header } from "@/components/layout/Header";
 export default function PostNotFound() {
   return (
     <div className="flex min-h-screen flex-col bg-cream">
-      <Header />
+      <SiteHeader />
       <main className="flex flex-1 flex-col items-center justify-center px-4 py-24 text-center">
         <p className="font-serif text-2xl font-semibold text-charcoal sm:text-3xl">
           글을 찾을 수 없습니다
@@ -24,7 +24,7 @@ export default function PostNotFound() {
           홈으로 돌아가기
         </Link>
       </main>
-      <Footer />
+      <SiteFooter />
     </div>
   );
 }

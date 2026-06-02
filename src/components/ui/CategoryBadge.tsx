@@ -1,15 +1,14 @@
-import type { Category } from "@/types/post";
-import { getCategoryKo, getCategoryLabel } from "@/lib/categories";
+import type { Category } from "@/types/database";
 
 type CategoryBadgeProps = {
   category: Category;
-  /** label: 이모지+한글 / ko: 한글만 */
-  variant?: "label" | "ko";
+  /** label: 이모지+이름 / name: 이름만 */
+  variant?: "label" | "name";
   className?: string;
 };
 
 /**
- * 칼럼 카테고리 뱃지 — 토큰 색상 기반 pill
+ * 카테고리 뱃지
  */
 export function CategoryBadge({
   category,
@@ -17,7 +16,9 @@ export function CategoryBadge({
   className = "",
 }: CategoryBadgeProps) {
   const text =
-    variant === "ko" ? getCategoryKo(category) : getCategoryLabel(category);
+    variant === "name"
+      ? category.name
+      : `${category.emoji} ${category.name}`;
 
   return (
     <span

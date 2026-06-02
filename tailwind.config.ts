@@ -16,8 +16,8 @@ const config: Config = {
         charcoal: "var(--text-charcoal)",
         mute: "var(--text-mute)",
         caramel: "var(--accent-caramel)",
-        /** StatCard·prose 등에서 명시적 이름으로 사용 */
         "accent-caramel": "var(--accent-caramel)",
+        "accent-primary-hover": "var(--accent-primary-hover)",
         "accent-light": "var(--accent-light)",
         "line-soft": "var(--line-soft)",
       },

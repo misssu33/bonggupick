@@ -1,47 +1,59 @@
-import type { Category } from "@/types/post";
+import { mapCategory } from "@/lib/mappers";
+import { getSupabase, isSupabaseConfigured } from "@/lib/supabase";
+import type { Category, DbCategory } from "@/types/database";
 
-/** 동적 라우트 등에서 slug가 카테고리인지 검사 */
-export function isCategorySlug(slug: string): slug is Category {
-  return slug === "daily" || slug === "it" || slug === "support";
+const TABLE = "categories";
+
+function mapRows(data: unknown): Category[] {
+  if (!Array.isArray(data)) return [];
+  const out: Category[] = [];
+  for (const row of data) {
+    const c = mapCategory(row as DbCategory);
+    if (c) out.push(c);
+  }
+  return out.sort((a, b) => a.sortOrder - b.sortOrder);
 }
 
-/** 카테고리 라벨·이모지·한 줄 설명(slug는 DB category 값과 동일) */
-export const CATEGORY_LABELS: Record<
-  Category,
-  { ko: string; emoji: string; slug: Category; description: string }
-> = {
-  daily: {
-    ko: "일상노하우",
-    emoji: "🌱",
-    slug: "daily",
-    description: "20~30대의 생활 노하우와 팁",
-  },
-  it: {
-    ko: "IT",
-    emoji: "💡",
-    slug: "it",
-    description: "최신 IT 트렌드와 AI 활용법",
-  },
-  support: {
-    ko: "국가지원사업",
-    emoji: "🎁",
-    slug: "support",
-    description: "놓치면 손해 보는 정부지원 정보",
-  },
-};
+/** 전체 카테고리 (sort_order 오름차순) */
+export async function getCategories(): Promise<Category[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
 
-/** 이모지 + 한글 (예: "🌱 일상노하우") */
-export function getCategoryLabel(category: Category): string {
-  const row = CATEGORY_LABELS[category];
-  return `${row.emoji} ${row.ko}`;
+  try {
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select("*")
+      .order("sort_order", { ascending: true, nullsFirst: false });
+
+    if (error) throw error;
+    return mapRows(data);
+  } catch (e) {
+    if (isSupabaseConfigured()) {
+      console.error("[getCategories]", e);
+    }
+    return [];
+  }
 }
 
-/** 한글만 (예: "일상노하우") */
-export function getCategoryKo(category: Category): string {
-  return CATEGORY_LABELS[category].ko;
-}
+/** slug로 단일 카테고리 */
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  const supabase = getSupabase();
+  if (!supabase) return null;
 
-/** SEO·페이지 부제용 한 줄 설명 */
-export function getCategoryDescription(category: Category): string {
-  return CATEGORY_LABELS[category].description;
+  try {
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select("*")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return null;
+    return mapCategory(data as DbCategory);
+  } catch (e) {
+    if (isSupabaseConfigured()) {
+      console.error("[getCategoryBySlug]", e);
+    }
+    return null;
+  }
 }

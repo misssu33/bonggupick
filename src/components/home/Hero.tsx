@@ -1,32 +1,48 @@
+import Link from "next/link";
+
 /**
- * 메인 히어로 — 에디토리얼 타이포 + 구분선 + 서브카피
+ * 메인 히어로 — 연구소 톤, CTA 2개
  */
 export function Hero() {
   return (
     <section
-      className="border-b border-line-soft"
+      className="border-b border-line-soft bg-paper/40"
       aria-labelledby="hero-heading"
     >
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
-        <p className="text-xs tracking-wider text-mute">
-          ── ISSUE 01 · 2026 WINTER
+      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20 md:py-28 lg:px-8">
+        <p className="inline-flex items-center gap-2 rounded-full border border-line-soft bg-cream px-3 py-1 text-xs font-medium text-mute">
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-caramel"
+            aria-hidden
+          />
+          AI 쇼핑·숏폼 운영 연구소
         </p>
+
         <h1
           id="hero-heading"
-          className="font-serif mt-6 max-w-4xl text-5xl font-bold leading-[1.2] tracking-tight text-charcoal"
+          className="mt-6 max-w-3xl text-balance text-3xl font-bold leading-tight tracking-tight text-charcoal sm:text-4xl md:text-5xl"
         >
-          이번 주
-          <br />
-          트렌드{" "}
-          <span className="font-serif font-bold italic text-caramel">Pick</span>
-          .
+          AI로 쇼핑과 콘텐츠를 연구합니다.
         </h1>
-        <div
-          className="mt-6 h-px w-6 bg-caramel"
-          aria-hidden
-          role="presentation"
-        />
-        <p className="mt-6 text-lg text-mute">매주 월·목, 새 픽이 도착합니다.</p>
+
+        <p className="mt-5 max-w-2xl text-base leading-relaxed text-mute sm:text-lg">
+          TikTok Affiliate · AI 상세페이지 · 쇼츠 전환 구조 아카이브
+        </p>
+
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <Link
+            href="/#latest"
+            className="inline-flex items-center justify-center rounded-lg bg-caramel px-6 py-3 text-sm font-semibold text-white transition-base hover:bg-accent-primary-hover hover:shadow-hover"
+          >
+            최신 실험 보기
+          </Link>
+          <Link
+            href="/resources"
+            className="inline-flex items-center justify-center rounded-lg border border-line-soft bg-cream px-6 py-3 text-sm font-semibold text-charcoal transition-base hover:border-caramel/40 hover:bg-paper"
+          >
+            무료 템플릿 받기
+          </Link>
+        </div>
       </div>
     </section>
   );

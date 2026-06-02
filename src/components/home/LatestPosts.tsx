@@ -1,42 +1,54 @@
-import type { Post } from "@/types/post";
+import type { Post } from "@/types/database";
 import { PostCard } from "@/components/ui/PostCard";
-
-function SectionHead({ title }: { title: string }) {
-  return (
-    <div className="mb-8 flex items-center gap-4 sm:mb-10">
-      <h2 className="shrink-0 text-sm font-medium uppercase tracking-widest text-mute">
-        {title}
-      </h2>
-      <div className="h-px flex-1 bg-line-soft" aria-hidden />
-    </div>
-  );
-}
+import { SectionHead } from "@/components/ui/SectionHead";
+import { CARD_GRID } from "@/components/ui/card-grid";
 
 type LatestPostsProps = {
+  featuredPosts: Post[];
   posts: Post[];
 };
 
 /**
- * 최신 칼럼 그리드 — 모바일 1열, 태블릿 2열, 데스크톱 3열
+ * 피처드 우선 + 최신 실험 글
  */
-export function LatestPosts({ posts }: LatestPostsProps) {
-  return (
-    <section aria-label="최신 칼럼">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
-        <SectionHead title="LATEST" />
+export function LatestPosts({ featuredPosts, posts }: LatestPostsProps) {
+  const featuredIds = new Set(featuredPosts.map((p) => p.id));
+  const rest = posts.filter((p) => !featuredIds.has(p.id));
+  const hasAny = featuredPosts.length > 0 || rest.length > 0;
 
-        {posts.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-line-soft bg-paper/50 py-16 text-center text-sm text-mute">
+  return (
+    <section id="latest" aria-label="최신 실험">
+      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 md:py-20 lg:px-8">
+        <SectionHead
+          title="최신 실험"
+          subtitle="주목 실험 글이 상단에 우선 노출됩니다"
+        />
+
+        {!hasAny ? (
+          <p className="rounded-xl border border-dashed border-line-soft bg-paper py-16 text-center text-sm text-mute">
             아직 발행된 글이 없습니다.
           </p>
         ) : (
-          <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-            {posts.map((post) => (
-              <li key={post.id}>
-                <PostCard post={post} />
-              </li>
-            ))}
-          </ul>
+          <>
+            {featuredPosts.length > 0 ? (
+              <ul className={`${CARD_GRID} mb-8`}>
+                {featuredPosts.map((post) => (
+                  <li key={post.id}>
+                    <PostCard post={post} featured />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {rest.length > 0 ? (
+              <ul className={CARD_GRID}>
+                {rest.map((post) => (
+                  <li key={post.id}>
+                    <PostCard post={post} />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </>
         )}
       </div>
     </section>

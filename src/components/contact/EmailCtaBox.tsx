@@ -2,7 +2,9 @@
 
 import { useCallback, useState } from "react";
 
-const EMAIL = "minilo0619@gmail.com";
+import { SITE_EMAIL } from "@/lib/site";
+
+const EMAIL = SITE_EMAIL;
 
 /**
  * 연락처 페이지 — 이메일 강조 박스 + mailto + 클립보드 복사
